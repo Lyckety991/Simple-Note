@@ -1,0 +1,83 @@
+/* 
+  Localizable.strings
+  Simple-Task
+
+  Created by Patrick Lanham on 05.04.25.
+  
+*/
+// AddTaskSheet
+"noteTitleSection" = "Neue Notiz";
+"taskPlaceholder" = "Name der Notiz";
+"descriptionSection" = "Beschreibung";
+"dueAndReminderSection" = "Erinnerung";
+"dateLabel" = "Datum";
+"reminderLabel" = "Wann erinnern?";
+"noReminder" = "Keine Erinnerung";
+"atDue" = "Zur Fälligkeit";
+"5minBefore" = "5 Minuten vorher";
+"30minBefore" = "30 Minuten vorher";
+"1hourBefore" = "1 Stunde vorher";
+"1dayBefore" = "1 Tag vorher";
+"categorySection" = "Kategorie";
+"reminderPrefix" = "Erinnerung:";
+"dueAt" = "Fällig um";
+"saveButton" = "Speichern";
+"cancel" = "Abbrechen";
+"newNoteTitle" = "Neue Notiz";
+
+// DetailsView
+"titleSection" = "Titel";
+"titlePlaceholder" = "Notiz Titel eingeben";
+
+"descriptionSection" = "Beschreibung";
+
+"dueAndReminderSection" = "Datum & Erinnerung";
+"dateLabel" = "Datum";
+"reminderLabel" = "Wann erinnern?";
+"noReminder" = "Keine Erinnerung";
+"atDue" = "Zur Fälligkeit";
+"5minBefore" = "5 Minuten vorher";
+"30minBefore" = "30 Minuten vorher";
+"1hourBefore" = "1 Stunde vorher";
+"1dayBefore" = "1 Tag vorher";
+"reminderPreview" = "Erinnerung am: %@ Uhr";
+"reminderActive" = "Erinnerung ist aktiv";
+
+"categorySection" = "Kategorie";
+"categoryPickerLabel" = "Kategorie auswählen";
+
+"editNoteTitle" = "Notiz bearbeiten";
+"cancelButton" = "Abbrechen";
+"saveButton" = "Speichern";
+
+//Settings
+"settingsTitle" = "Einstellungen";
+
+"appearanceSection" = "Darstellung";
+"darkModeToggle" = "Dark Mode";
+
+"supportSection" = "Support";
+"supportEmailButton" = "Support Email";
+
+"infoSection" = "Informationen zur App";
+"privacyPolicyButton" = "Datenschutz";
+"legalNoticeButton" = "Rechtliches";
+"termsButton" = "Nutzungsbedingungen";
+"aboutButton" = "Über die App";
+
+"appInfoSection" = "App";
+"versionLabel" = "Version";
+
+//ContentView
+
+categoryPrivate = "Privat";
+categoryWork = "Arbeit";
+categoryImportant = "Wichtig";
+categoryOther = "Sonstiges";
+
+"categoryPickerTitle" = "Kategorie";
+"allCategories" = "Alle";
+"yourNotesTitle" = "Deine Notizen";
+"noNotesFound" = "Keine Notizen gefunden!";
+"addNewNoteHint" = "Füge neue Notizen über das %@-Symbol hinzu.";
+

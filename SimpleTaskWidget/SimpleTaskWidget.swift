@@ -5,47 +5,75 @@
 //  Created by Patrick Lanham on 28.03.25.
 //
 
-import WidgetKit
-import SwiftUI
-
-
 
 import SwiftUI
 import WidgetKit
 
 struct SimpleTaskWidgetEntryView: View {
-    var entry: TaskEntry
+    let entry: TaskEntry
+    @Environment(\.widgetFamily) var family
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        switch family {
+        case .systemSmall:
+            smallWidgetView
+        default:
+            mediumWidgetView
+        }
+    }
+
+    // 🔹 Kleine Widget-Ansicht: nur Gesamtanzahl
+    var smallWidgetView: some View {
+        VStack {
+            Text("📋 Aufgaben")
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            Text("\(entry.tasks.count)")
+                .font(.system(size: 48, weight: .bold))
+                .foregroundColor(.accentColor)
+
+            Text("insgesamt")
+                .font(.footnote)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .containerBackground(.fill.tertiary, for: .widget)
+
+    }
+
+    // 🔸 Mittlere Widget-Ansicht bleibt wie gehabt
+    var mediumWidgetView: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text("🗂️ Deine Tasks")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundColor(.primary)
+                .padding(.bottom, 10)
+
             if entry.tasks.isEmpty {
                 Text("🎉 Keine Aufgaben")
                     .font(.caption)
                     .foregroundColor(.secondary)
             } else {
-                ForEach(entry.tasks.prefix(3)) { task in
-                    HStack(alignment: .top, spacing: 8) {
-                        // Kategorie-Symbol mit Farbe
-                        Image(systemName: icon(for: task.category))
-                            .foregroundColor(color(for: task.category))
-                            .frame(width: 20)
+                HStack(spacing: 12) {
+                    statBox(title: "Wichtig", count: entry.importantCount, color: .red)
+                    statBox(title: "Arbeit", count: entry.workCount, color: .green)
+                    statBox(title: "Privat", count: entry.privateCount, color: .blue)
+                }
 
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(task.title)
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundColor(.primary)
-                                .lineLimit(1)
+                Spacer(minLength: 3)
 
-                            Text(task.category)
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                                .lineLimit(1)
-                        }
-
-                        Spacer()
+                Link(destination: URL(string: "simpletask://add")!) {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                        Text("Neue Aufgabe")
+                            .font(.caption)
+                            .bold()
                     }
+                    .foregroundColor(.white)
                     .padding(8)
-                    .background(.thinMaterial)
+                    .background(Color.accentColor)
                     .cornerRadius(8)
                 }
             }
@@ -54,88 +82,51 @@ struct SimpleTaskWidgetEntryView: View {
         .containerBackground(.fill.tertiary, for: .widget)
     }
 
-    // 🏷 Symbol je Kategorie
-    func icon(for category: String) -> String {
-        switch category.lowercased() {
-        case "privat": return "house"
-        case "arbeit": return "briefcase"
-        case "wichtig": return "exclamationmark.circle"
-        default: return "tag"
+    func statBox(title: String, count: Int, color: Color) -> some View {
+        VStack(spacing: 4) {
+            Text(title)
+                .font(.caption2)
+                .foregroundColor(color)
+                .bold()
+            Text("\(count)")
+                .font(.title3)
+                .foregroundColor(.black)
+                .bold()
         }
-    }
-
-    // 🎨 Farbe je Kategorie
-    func color(for category: String) -> Color {
-        switch category.lowercased() {
-        case "privat": return .blue
-        case "arbeit": return .green
-        case "wichtig": return .red
-        default: return .gray
-        }
+        .frame(maxWidth: .infinity)
+        .padding(8)
+        .background(Color(.white))
+        .cornerRadius(10)
+        .shadow(color: Color.gray.opacity(0.2), radius: 2, x: 0, y: 2)
     }
 }
 
-
-struct Provider: TimelineProvider {
-    func placeholder(in context: Context) -> TaskEntry {
-        TaskEntry(date: Date(), tasks: sampleTasks())
-    }
-
-    func getSnapshot(in context: Context, completion: @escaping (TaskEntry) -> ()) {
-        let entry = TaskEntry(date: Date(), tasks: sampleTasks())
-        completion(entry)
-    }
-
-    func getTimeline(in context: Context, completion: @escaping (Timeline<TaskEntry>) -> Void) {
-        let entry = TaskStorageReader.loadTaskForWidget() ??
-            TaskEntry(date: Date(), tasks: [])
-
-        let nextUpdate = Calendar.current.date(byAdding: .minute, value: 30, to: Date())!
-        let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
-        completion(timeline)
-    }
-
-    // Beispiel-Daten für Preview und Placeholder
-    func sampleTasks() -> [TaskEntryItem] {
-        return [
-            TaskEntryItem(id: UUID(), title: "Einkaufen", category: "Privat"),
-            TaskEntryItem(id: UUID(), title: "Bericht schreiben", category: "Arbeit"),
-            TaskEntryItem(id: UUID(), title: "Training", category: "Wichtig")
-        ]
-    }
-}
-
-
-
-struct SimpleTaskWidget: Widget {
-    let kind: String = "SimpleTaskWidget"
-
-    var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: Provider()) { entry in
-            SimpleTaskWidgetEntryView(entry: entry)
-        }
-        .configurationDisplayName("Nächste Aufgabe")
-        .description("Zeigt deine wichtigste Aufgabe.")
-        .supportedFamilies([.systemSmall, .systemMedium])
-    }
-}
-
-struct SimpleTaskWidget_Previews: PreviewProvider {
+struct SimpleTaskWidgetEntryView_Previews: PreviewProvider {
     static var previews: some View {
-        let previewTasks = [
-            TaskEntryItem(id: UUID(), title: "📝 Einkaufsliste", category: "Privat"),
-            TaskEntryItem(id: UUID(), title: "📊 Projekt-Review", category: "Arbeit"),
-            TaskEntryItem(id: UUID(), title: "🔥 Workout", category: "Wichtig")
-        ]
+        Group {
+            SimpleTaskWidgetEntryView(entry: TaskEntry(
+                date: Date(),
+                tasks: [
+                    TaskEntryItem(id: UUID(), title: "Test", category: "Arbeit")
+                ],
+                importantCount: 1,
+                workCount: 1,
+                privateCount: 1
+            ))
+            .previewContext(WidgetPreviewContext(family: .systemSmall))
 
-        let entry = TaskEntry(date: Date(), tasks: previewTasks)
-
-        return Group {
-            SimpleTaskWidgetEntryView(entry: entry)
-                .previewContext(WidgetPreviewContext(family: .systemSmall))
-
-            SimpleTaskWidgetEntryView(entry: entry)
-                .previewContext(WidgetPreviewContext(family: .systemMedium))
+            SimpleTaskWidgetEntryView(entry: TaskEntry(
+                date: Date(),
+                tasks: [
+                    TaskEntryItem(id: UUID(), title: "Test", category: "Arbeit"),
+                    TaskEntryItem(id: UUID(), title: "Zweiter", category: "Privat")
+                ],
+                importantCount: 1,
+                workCount: 1,
+                privateCount: 1
+            ))
+            .previewContext(WidgetPreviewContext(family: .systemMedium))
         }
     }
 }
+

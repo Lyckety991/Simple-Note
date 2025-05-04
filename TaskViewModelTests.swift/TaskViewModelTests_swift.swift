@@ -10,7 +10,6 @@ import Foundation
 
 struct TaskViewModelTests {
 
-    // Hilfsmethode, um pro Test ein sauberes Datenmodell zu erzeugen
     private func createIsolatedViewModel() -> TaskViewModel {
         let manager = TaskDataModel(inMemory: true)
         return TaskViewModel(manager: manager)
@@ -20,7 +19,7 @@ struct TaskViewModelTests {
         let viewModel = createIsolatedViewModel()
         #expect(viewModel.task.isEmpty)
 
-        viewModel.createTask(
+        let task = viewModel.createTask(
             title: "Testaufgabe",
             desc: "Beschreibung",
             date: Date(),
@@ -30,64 +29,67 @@ struct TaskViewModelTests {
         #expect(viewModel.task.count == 1)
         #expect(viewModel.task.first?.title == "Testaufgabe")
         #expect(viewModel.task.first?.taskCategory == .arbeit)
+
+        // Optional: Prüfe ob ID für Notification existiert
+        #expect(task.calendarEventID == nil) // da kein Offset gesetzt
     }
 
-    @Test func testDeleteTask_removesTaskFromList() async throws {
+    @Test func testDeleteTask_removesTaskAndNotification() async throws {
         let viewModel = createIsolatedViewModel()
 
-        viewModel.createTask(
-            title: "Zum Löschen",
-            desc: "Test",
-            date: Date(),
+        let task = viewModel.createTask(
+            title: "Mit Erinnerung",
+            desc: "Wird gelöscht",
+            date: Date().addingTimeInterval(3600),
             category: .sonstiges
+        )
+        task.calendarEventID = NotificationManager.shared.scheduleNotification(
+            title: task.title ?? "",
+            body: "Test",
+            at: task.date ?? Date()
         )
 
         #expect(viewModel.task.count == 1)
+        #expect(task.calendarEventID != nil)
 
-        if let task = viewModel.task.first {
-            viewModel.deleteTask(task)
-        }
-
+        viewModel.deleteTask(task)
         #expect(viewModel.task.isEmpty)
     }
-    
-    
-    
+
     @Test func testUpdateTask_updatesValuesCorrectly() async throws {
         let viewModel = createIsolatedViewModel()
+        
+        // 🔧 Sicherstellen, dass Notifications aktiviert sind
+        viewModel.notificationsEnabled = true
 
-        viewModel.createTask(
+        let task = viewModel.createTask(
             title: "Original",
             desc: "Alte Beschreibung",
             date: Date(),
             category: .privat
         )
 
-        #expect(viewModel.task.count == 1)
-
-        guard let task = viewModel.task.first else {
-            _ = #expect(Bool(false)) // Aufgabe konnte nicht geladen werden
-            return
-        }
-
-
         let newTitle = "Geändert"
         let newDesc = "Neue Beschreibung"
         let newDate = Date().addingTimeInterval(3600)
+        let offset: TimeInterval = -300 // 5 Min vorher
 
         viewModel.updateTask(
             task,
             title: newTitle,
             desc: newDesc,
             isInCalendar: false,
-            date: newDate
+            date: newDate,
+            category: .arbeit,
+            reminderOffset: offset
         )
 
         viewModel.fetchTask()
 
         #expect(task.title == newTitle)
         #expect(task.desc == newDesc)
-        #expect(Calendar.current.isDate(task.date ?? Date(), equalTo: newDate, toGranularity: .minute))
+        #expect(task.taskCategory == .arbeit)
+        #expect(task.calendarEventID != nil) // ✅ Wichtig!
     }
 
 }

@@ -11,7 +11,7 @@ import SwiftUI
 @main
 struct SimpleTaskWidgetBundle: WidgetBundle {
     var body: some Widget {
-        SimpleTaskWidget()
+       
         SimpleTaskWidgetControl()
         SimpleTaskWidgetLiveActivity()
     }

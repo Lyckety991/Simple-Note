@@ -9,6 +9,7 @@ import SwiftUI
 
 struct FloatingAddButton: View {
     @Binding var isShowingAddTaskSheet: Bool
+    @AppStorage("isDarkMode") private var isDarkMode = false
 
     var body: some View {
         Button {
@@ -16,9 +17,9 @@ struct FloatingAddButton: View {
         } label: {
             Image(systemName: "plus")
                 .font(.system(size: 24))
-                .foregroundColor(.white)
+                .foregroundColor(isDarkMode ? Color.black : Color.white)
                 .frame(width: 60, height: 60)
-                .background(Color.blue)
+                .background(isDarkMode ? Color.white : Color.black)
                 .clipShape(Circle())
                 .shadow(radius: 5)
         }

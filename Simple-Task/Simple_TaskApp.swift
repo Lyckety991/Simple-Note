@@ -13,18 +13,44 @@ struct Simple_TaskApp: App {
     @AppStorage("isDarkMode") private var isDarkMode = false
 
    
-
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(taskViewModel)
                 .environment(\.managedObjectContext, taskViewModel.manager.persistentContainer.viewContext)
                 .onAppear {
-                    NotificationManager.shared.requestAuthorization()
-                    // Apply UI mode bei App-Start
-                    let style: UIUserInterfaceStyle = isDarkMode ? .dark : .light
-                    UIApplication.shared.windows.first?.overrideUserInterfaceStyle = style
+                    taskViewModel.loadData()
+                    // UI-Stil setzen
+                    applyTheme()
+                    Task {
+                        await requestNotifications()
+                    }
+                    
+                   
                 }
+            
+
+        }
+        
+        
+    }
+    
+    private func requestNotifications() async {
+        let granted = await NotificationManager.shared.requestAuthorization()
+        await MainActor.run {
+            print("🔁 Notification-Berechtigung gespeichert: \(granted)")
+            taskViewModel.notificationsEnabled = granted
         }
     }
+
+      
+      private func applyTheme() {
+          if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+              windowScene.windows.first?.overrideUserInterfaceStyle = isDarkMode ? .dark : .light
+          }
+      }
+    
+    
+    
 }
+

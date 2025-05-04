@@ -20,13 +20,20 @@ struct AddTaskSheet: View {
     @State private var selectedCategory: TaskCategory = .privat
     @State var selectedDate: Date
     @State private var reminderOffset: TimeInterval = 0
+    @Environment(\.dismiss) private var dismiss
+    @AppStorage("isDarkMode") private var isDarkMode = false
+    
+    //Neu
+    @State private var isDueDateEnabled: Bool = false
+
+    
 
     var body: some View {
         NavigationStack {
-            Form {
+            List {
                 // Eingabe für Aufgabentitel
-                Section("Deine Notiz") {
-                    TextField("Deine Aufgabe...", text: $taskTitle)
+                Section(NSLocalizedString("noteTitleSection", comment: "Section title for task title")) {
+                    TextField(NSLocalizedString("taskPlaceholder", comment:"Placeholder for task title"), text: $taskTitle)
                         .onAppear {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                 isTextFieldFocused = true
@@ -36,7 +43,7 @@ struct AddTaskSheet: View {
                        
                 }
                 // Eingabe für Beschreibung
-                Section("Beschreibung") {
+                Section(NSLocalizedString("descriptionSection", comment: "Section title for task description")) {
                     TextEditor(text: $desc)
                         .frame(height: 150)
                         .cornerRadius(8)
@@ -50,93 +57,133 @@ struct AddTaskSheet: View {
                 }
                 
                 // Bereich für das Fälligkeitsdatum und der Erinnerung
-                Section("Fälligkeit und Erinnerung") {
-                    
-                    DatePicker("Datum", selection: $selectedDate, displayedComponents: [.date, .hourAndMinute])
-                    
-                    Picker("Wann erinnern?", selection: $reminderOffset) {
-                           Text("Keine Erinnerung").tag(0.0)
-                           Text("Zur Fälligkeit").tag(0.1) // Mini-Offset für "gleichzeitig"
-                           Text("5 Minuten vorher").tag(-300.0)
-                           Text("30 Minuten vorher").tag(-1800.0)
-                           Text("1 Stunde vorher").tag(-3600.0)
-                           Text("1 Tag vorher").tag(-86400.0)
-                       }
-                       .pickerStyle(MenuPickerStyle())
-                    
-                    
-                }
-                
-                
+                Section(NSLocalizedString("dueAndReminderSection", comment: "Section title for due date and reminder")) {
 
-                // Auswahl der Kategorie via Segmented Picker
-                Section("Kategorie") {
-                    Picker("Kategorie", selection: $selectedCategory) {
-                        ForEach(TaskCategory.allCases) { category in
-                            Label(category.rawValue, systemImage: category.symbol).tag(category)
+                    Toggle(isOn: $isDueDateEnabled) {
+                        Label("Fälligkeit aktivieren", systemImage: "calendar.badge.clock")
+                            .foregroundStyle(isDarkMode ? .white : .black)
+                    }
+                    .tint(isDarkMode ? .white : .black)
+
+                    if isDueDateEnabled {
+                        DatePicker(
+                            NSLocalizedString("dateLabel", comment: "Label for due date"),
+                            selection: $selectedDate,
+                            displayedComponents: [.date, .hourAndMinute]
+                        )
+
+                        Picker(
+                            NSLocalizedString("reminderLabel", comment: "Label for reminder picker"),
+                            selection: $reminderOffset
+                        ) {
+                            Text(NSLocalizedString("noReminder", comment: "No reminder")).tag(0.0)
+                            Text(NSLocalizedString("atDue", comment: "Reminder at due time")).tag(0.1)
+                            Text(NSLocalizedString("5minBefore", comment: "5 minutes before")).tag(-300.0)
+                            Text(NSLocalizedString("30minBefore", comment: "30 minutes before")).tag(-1800.0)
+                            Text(NSLocalizedString("1hourBefore", comment: "1 hour before")).tag(-3600.0)
+                            Text(NSLocalizedString("1dayBefore", comment: "1 day before")).tag(-86400.0)
+                        }
+                        .pickerStyle(MenuPickerStyle())
+                        .tint(isDarkMode ? .white : .black)
+
+                        if reminderOffset != 0 {
+                            Text("Erinnerung am: \(formatDate(selectedDate.addingTimeInterval(reminderOffset))) Uhr")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
                     }
+                }
+
+                
+                // Auswahl der Kategorie via Segmented Picker
+                Section(NSLocalizedString("categorySection", comment: "Section title for category picker")) {
+                    Picker("Kategorie", selection: $selectedCategory) {
+                        ForEach(TaskCategory.allCases) { category in
+                            Label(category.displayName, systemImage: category.symbol).tag(category)
+                        }
+                       
+                    }
+                    
                     .pickerStyle(SegmentedPickerStyle())
                 }
 
                 
-              
-                    // Speichern-Button
-                    Button(action: {
-                        if !taskTitle.isEmpty {
-                            let deadline = selectedDate
-                            let reminderDate = selectedDate.addingTimeInterval(reminderOffset)
-
-                            viewModel.createTask(
-                                title: taskTitle,
-                                desc: desc,
-                                date: deadline,
-                                category: selectedCategory
-                            )
-
-                            // Nur Notification planen, wenn gewünscht
-                            if reminderOffset != 0 {
-                                NotificationManager.shared.scheduleNotification(
-                                    title: "Erinnerung: \(taskTitle)",
-                                    body: "Fällig um \(formatDate(deadline))",
-                                    at: reminderDate
-                                )
-                            }
-
-                            hideKeyboard()
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                isShowingSheet = false
-                                
-                            }
-                            
-                           
-                            
-                            UINotificationFeedbackGenerator().notificationOccurred(.success)
-                        }
-                    }) {
-                        Text("Speichern")
-                            .fontWeight(.bold)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                    }
-                    .disabled(taskTitle.trimmingCharacters(in: .whitespaces).isEmpty)
-                    
-                
-              
-
             }
+            
             .padding(.horizontal, 2)
-            .navigationTitle("Neue Notiz")
-            .navigationBarItems(trailing: Button("Abbrechen") {
+            .navigationTitle(NSLocalizedString("newNoteTitle", comment: "Title for new note view"))
+            .navigationBarItems(leading: Button(NSLocalizedString("cancel", comment: "Cancel button")) {
                 isShowingSheet = false
                
-            })
+            }
+                .foregroundStyle(isDarkMode ? .white : .black))
+
+            .navigationBarItems(trailing:
+                                    // Speichern-Button
+                                Button(action: {
+                                    Task {
+                                        do {
+                                            guard !taskTitle.isEmpty else { return }
+                                            let deadline = selectedDate
+                                            let reminderDate = selectedDate.addingTimeInterval(reminderOffset)
+                                            
+                                            // 1. Task erstellen (mit try await)
+                                            let newTask = try await viewModel.createTask(
+                                                title: taskTitle,
+                                                desc: desc,
+                                                date: deadline,
+                                                category: selectedCategory
+                                            )
+                                            
+                                            // 2. Notification mit try await
+                                            if reminderOffset != 0 {
+                                                let id = try await NotificationManager.shared.scheduleNotification(
+                                                    title: "\(NSLocalizedString("reminderPrefix", comment: "")) \(taskTitle)",
+                                                    body: "\(NSLocalizedString("dueAt", comment: "")) \(formatDate(deadline))",
+                                                    at: reminderDate
+                                                )
+                                                
+                                                // 3. Context Saving mit await
+                                                // In deiner Button-Action
+                                                await MainActor.run {
+                                                    newTask.calendarEventID = id // UI-Update im MainThread
+                                                }
+                                                await viewModel.saveContext() // Async-Aufruf mit await
+                                            }
+                                            
+                                            // 4. UI Updates auf MainActor
+                                            await MainActor.run {
+                                                hideKeyboard()
+                                                
+                                                UINotificationFeedbackGenerator().notificationOccurred(.success)
+                                            }
+                                            
+                                            // 5. Sheet schließen mit Verzögerung
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                                dismiss()
+                                                isShowingSheet = false
+                                            }
+                                            
+                                        } catch {
+                                            await MainActor.run {
+                                                // 6. Fehlerbehandlung in der UI
+                                               
+                                                UINotificationFeedbackGenerator().notificationOccurred(.error)
+                                            }
+                                        }
+                                    }
+                                    }) {
+                                        Text(NSLocalizedString("saveButton", comment: "Save button title"))
+                                            .frame(maxWidth: .infinity)
+                                            .padding()
+                                            
+                                            .foregroundColor(isDarkMode ? .white : .black)
+                                            .cornerRadius(8)
+                                    }
+                                    .disabled(taskTitle.trimmingCharacters(in: .whitespaces).isEmpty)
             
             
-          
+            )
             
             
             

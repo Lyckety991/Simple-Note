@@ -1,0 +1,83 @@
+/* 
+  Localizable.strings
+  Simple-Task
+
+  Created by Patrick Lanham on 05.04.25.
+  
+*/
+
+//AddTaskSheet
+"noteTitleSection" = "Your Note";
+"taskPlaceholder" = "Your task...";
+"descriptionSection" = "Description";
+"dueAndReminderSection" = "Due & Reminder";
+"dateLabel" = "Date";
+"reminderLabel" = "Reminder";
+"noReminder" = "No reminder";
+"atDue" = "At due date";
+"5minBefore" = "5 minutes before";
+"30minBefore" = "30 minutes before";
+"1hourBefore" = "1 hour before";
+"1dayBefore" = "1 day before";
+"categorySection" = "Category";
+"reminderPrefix" = "Reminder:";
+"dueAt" = "Due at";
+"saveButton" = "Save";
+"cancel" = "Cancel";
+"newNoteTitle" = "New Note";
+
+// DetailView "titleSection" = "Title";
+"titlePlaceholder" = "Enter note title";
+
+"descriptionSection" = "Description";
+
+"dueAndReminderSection" = "Due & Reminder";
+"dateLabel" = "Due date";
+"reminderLabel" = "Reminder";
+"noReminder" = "No reminder";
+"atDue" = "At due time";
+"5minBefore" = "5 minutes before";
+"30minBefore" = "30 minutes before";
+"1hourBefore" = "1 hour before";
+"1dayBefore" = "1 day before";
+"reminderPreview" = "Reminder at: %@";
+"reminderActive" = "Reminder is active";
+
+"categorySection" = "Category";
+"categoryPickerLabel" = "Select category";
+
+"editNoteTitle" = "Edit Note";
+"cancelButton" = "Cancel";
+"saveButton" = "Save";
+
+
+//Settings
+"settingsTitle" = "Settings";
+
+"appearanceSection" = "Appearance";
+"darkModeToggle" = "Dark Mode";
+
+"supportSection" = "Support";
+"supportEmailButton" = "Support Email";
+
+"infoSection" = "App Information";
+"privacyPolicyButton" = "Privacy Policy";
+"legalNoticeButton" = "Legal Notice";
+"termsButton" = "Terms of Use";
+"aboutButton" = "About the App";
+
+"appInfoSection" = "App";
+"versionLabel" = "Version";
+
+//ContentView
+
+categoryPrivate = "Personal";
+categoryWork = "Work";
+categoryImportant = "Important";
+categoryOther = "Other";
+
+"categoryPickerTitle" = "Category";
+"allCategories" = "All";
+"yourNotesTitle" = "Your Notes";
+"noNotesFound" = "No notes found!";
+"addNewNoteHint" = "Add new notes using the %@ button.";
