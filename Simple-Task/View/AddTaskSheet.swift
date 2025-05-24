@@ -25,6 +25,9 @@ struct AddTaskSheet: View {
     
     //Neu
     @State private var isDueDateEnabled: Bool = false
+    @State var showInvalidReminderAlert: Bool = false
+    @State private var showEmptyTitleAlert = false
+
 
     
 
@@ -34,11 +37,13 @@ struct AddTaskSheet: View {
                 // Eingabe für Aufgabentitel
                 Section(NSLocalizedString("noteTitleSection", comment: "Section title for task title")) {
                     TextField(NSLocalizedString("taskPlaceholder", comment:"Placeholder for task title"), text: $taskTitle)
+                        .focused($isTextFieldFocused)
                         .onAppear {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                 isTextFieldFocused = true
                             }
                         }
+                       
 
                        
                 }
@@ -47,23 +52,33 @@ struct AddTaskSheet: View {
                     TextEditor(text: $desc)
                         .frame(height: 150)
                         .cornerRadius(8)
-                        .onAppear {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                isTextFieldFocused = true
+                        .focused($isTextFieldFocused)
+                        .toolbar {
+                            ToolbarItemGroup(placement: .keyboard) {
+                                Spacer()
+                                Button(action: {
+                                    isTextFieldFocused = false
+                                }) {
+                                    Label("Tastatur schließen", systemImage: "keyboard.chevron.compact.down")
+                                }
                             }
                         }
-
-                        
                 }
+
                 
                 // Bereich für das Fälligkeitsdatum und der Erinnerung
                 Section(NSLocalizedString("dueAndReminderSection", comment: "Section title for due date and reminder")) {
 
                     Toggle(isOn: $isDueDateEnabled) {
-                        Label("Fälligkeit aktivieren", systemImage: "calendar.badge.clock")
-                            .foregroundStyle(isDarkMode ? .white : .black)
+                        Label(
+                            NSLocalizedString("enableDueDateToggle", comment: "Toggle label for enabling due date"),
+                            systemImage: "calendar.badge.clock"
+                        )
+                        .foregroundStyle(isDarkMode ? .white : .black)
                     }
-                    .tint(isDarkMode ? .white : .black)
+                    .tint(isDarkMode ? .white.opacity(0.50) : .black)
+
+                    
 
                     if isDueDateEnabled {
                         DatePicker(
@@ -86,11 +101,13 @@ struct AddTaskSheet: View {
                         .pickerStyle(MenuPickerStyle())
                         .tint(isDarkMode ? .white : .black)
 
-                        if reminderOffset != 0 {
-                            Text("Erinnerung am: \(formatDate(selectedDate.addingTimeInterval(reminderOffset))) Uhr")
+                        if reminderOffset != 0.0 {
+                            let reminderDate = reminderOffset == 0.1 ? selectedDate : selectedDate.addingTimeInterval(reminderOffset)
+                            Text(String(format: NSLocalizedString("reminderTimeLabel", comment: "Label for reminder date"), formatDate(reminderDate)))
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
+
                     }
                 }
 
@@ -123,33 +140,41 @@ struct AddTaskSheet: View {
                                 Button(action: {
                                     Task {
                                         do {
-                                            guard !taskTitle.isEmpty else { return }
+                                            if taskTitle.trimmingCharacters(in: .whitespaces).isEmpty {
+                                                await MainActor.run {
+                                                    showEmptyTitleAlert = true
+                                                    UINotificationFeedbackGenerator().notificationOccurred(.warning)
+                                                }
+                                                return
+                                            }
+
+                                            //guard !taskTitle.isEmpty else { return }
                                             let deadline = selectedDate
                                             let reminderDate = selectedDate.addingTimeInterval(reminderOffset)
+                                            
+                                            if reminderOffset != 0.0 && reminderDate < Date() {
+                                                // Feedback und Abbruch
+                                                await MainActor.run {
+                                                    showInvalidReminderAlert = true
+                                                    UINotificationFeedbackGenerator().notificationOccurred(.error)
+                                                }
+                                                print("⚠️ Ungültiger Erinnerungszeitpunkt (liegt in der Vergangenheit)")
+                                                return
+                                            }
                                             
                                             // 1. Task erstellen (mit try await)
                                             let newTask = try await viewModel.createTask(
                                                 title: taskTitle,
                                                 desc: desc,
                                                 date: deadline,
-                                                category: selectedCategory
+                                                category: selectedCategory,
+                                                reminderOffset: reminderOffset
+                                                
                                             )
                                             
-                                            // 2. Notification mit try await
-                                            if reminderOffset != 0 {
-                                                let id = try await NotificationManager.shared.scheduleNotification(
-                                                    title: "\(NSLocalizedString("reminderPrefix", comment: "")) \(taskTitle)",
-                                                    body: "\(NSLocalizedString("dueAt", comment: "")) \(formatDate(deadline))",
-                                                    at: reminderDate
-                                                )
-                                                
-                                                // 3. Context Saving mit await
-                                                // In deiner Button-Action
-                                                await MainActor.run {
-                                                    newTask.calendarEventID = id // UI-Update im MainThread
-                                                }
-                                                await viewModel.saveContext() // Async-Aufruf mit await
-                                            }
+                                          
+                                            
+                                          
                                             
                                             // 4. UI Updates auf MainActor
                                             await MainActor.run {
@@ -161,13 +186,17 @@ struct AddTaskSheet: View {
                                             // 5. Sheet schließen mit Verzögerung
                                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                                                 dismiss()
+                                               
                                                 isShowingSheet = false
+                                                
                                             }
+                                            
+                                             viewModel.fetchTasks()
                                             
                                         } catch {
                                             await MainActor.run {
                                                 // 6. Fehlerbehandlung in der UI
-                                               
+                                                
                                                 UINotificationFeedbackGenerator().notificationOccurred(.error)
                                             }
                                         }
@@ -180,7 +209,28 @@ struct AddTaskSheet: View {
                                             .foregroundColor(isDarkMode ? .white : .black)
                                             .cornerRadius(8)
                                     }
-                                    .disabled(taskTitle.trimmingCharacters(in: .whitespaces).isEmpty)
+                                    //.disabled(taskTitle.trimmingCharacters(in: .whitespaces).isEmpty)
+                                    //Empty title alert
+                                    .alert(
+                                        NSLocalizedString("emptyTitleAlertTitle", comment: "Title for empty title alert"),
+                                        isPresented: $showEmptyTitleAlert
+                                    ) {
+                                        Button(NSLocalizedString("ok", comment: "OK button"), role: .cancel) {}
+                                    } message: {
+                                        Text(NSLocalizedString("emptyTitleAlertMessage", comment: "Message for empty title alert"))
+                                    }
+                                    //Invalid time alert
+                                    .alert(
+                                        NSLocalizedString("invalidReminderTitle", comment: "Title for invalid reminder alert"),
+                                        isPresented: $showInvalidReminderAlert
+                                    ) {
+                                        Button(NSLocalizedString("ok", comment: "OK button for alerts"), role: .cancel) {}
+                                    } message: {
+                                        Text(NSLocalizedString("invalidReminderMessage", comment: "Message for invalid reminder"))
+                                    }
+                                
+
+
             
             
             )
@@ -189,8 +239,10 @@ struct AddTaskSheet: View {
             
         }
         
+        
       
     }
+    
 }
 // Preview für SwiftUI Canvas
 struct AddTaskSheet_Previews: PreviewProvider {

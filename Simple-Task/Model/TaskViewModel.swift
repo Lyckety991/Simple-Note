@@ -45,19 +45,22 @@ class TaskViewModel: ObservableObject {
             }
         }
     }
-    
+    /// Funktion für das erstellen der Notizen
     func createTask(
         title: String,
         desc: String,
         date: Date,
+        creationDate: Date = Date(),
         category: TaskCategory,
-        reminderOffset: TimeInterval = 0
+        reminderOffset: TimeInterval
+        
     ) async throws -> PrivateTask { // 👈 throws hinzufügen
         let newTask = PrivateTask(context: manager.persistentContainer.viewContext)
         newTask.id = UUID()
         newTask.title = title
         newTask.desc = desc
         newTask.date = date
+        newTask.creationDate = creationDate
         newTask.category = category.rawValue
         newTask.reminderOffset = reminderOffset
         
@@ -80,8 +83,7 @@ class TaskViewModel: ObservableObject {
         }
         
         await saveContext()
-         fetchTasks()
-        TaskStorageHelper.saveTasksToWidget(tasks)
+         //fetchTasks()
         return newTask
     }
     
@@ -122,10 +124,12 @@ class TaskViewModel: ObservableObject {
         
         await saveContext()
         fetchTasks()
-        TaskStorageHelper.saveTasksToWidget(tasks)
     }
     
+    
     // MARK: - Update Task with Async/Await
+    /// Funktion zum updaten der Notizen
+    /// Überprüfung ob sich der Offset geändert hat
     func updateTask(
         _ task: PrivateTask,
         title: String,
@@ -137,7 +141,11 @@ class TaskViewModel: ObservableObject {
     ) async {
         let oldOffset = task.reminderOffset
         let oldID = task.calendarEventID
-        
+        let oldDate = task.date ?? Date.distantPast
+
+        // Neue Reminder-Zeit berechnen
+        let reminderDate = reminderOffset == 0.1 ? date : date.addingTimeInterval(reminderOffset)
+
         await MainActor.run {
             task.title = title
             task.desc = desc
@@ -146,31 +154,42 @@ class TaskViewModel: ObservableObject {
             task.category = category.rawValue
             task.reminderOffset = reminderOffset
         }
-        
+
+        // Berechnungen zum Vergleich
         let notificationsAllowed = await checkNotificationsEnabled()
-        let reminderDate = date.addingTimeInterval(reminderOffset)
         let offsetChanged = abs(reminderOffset - oldOffset) > 0.001
-        
+        let dateChanged = abs(oldDate.timeIntervalSince1970 - date.timeIntervalSince1970) > 1
+        let hasNoNotification = oldID == nil
+        let shouldUpdateReminder = offsetChanged || dateChanged || hasNoNotification
+
+        print("📌 UpdateTask wird aufgerufen mit:")
+        print(" - reminderOffset: \(reminderOffset)")
+        print(" - oldOffset: \(oldOffset)")
+        print(" - offsetChanged: \(offsetChanged)")
+        print(" - dateChanged: \(dateChanged)")
+        print(" - calendarEventID alt: \(oldID ?? "nil")")
+        print(" - shouldUpdateReminder: \(shouldUpdateReminder)")
+
         do {
-            
-            
-            try await handleNotificationUpdates(
-                task: task,
-                oldOffset: oldOffset,
-                oldID: oldID,
-                reminderDate: reminderDate,
-                offsetChanged: offsetChanged,
-                notificationsAllowed: notificationsAllowed,
-                title: title
-            )
+            if shouldUpdateReminder {
+                try await handleNotificationUpdates(
+                    task: task,
+                    oldOffset: oldOffset,
+                    oldID: oldID,
+                    reminderDate: reminderDate,
+                    offsetChanged: shouldUpdateReminder,
+                    notificationsAllowed: notificationsAllowed,
+                    title: title
+                )
+            }
         } catch {
             print("Fehler bei Benachrichtigungsupdate: \(error)")
         }
-        
+
         await saveContext()
         fetchTasks()
-        TaskStorageHelper.saveTasksToWidget(tasks)
     }
+
     
     // MARK: - Private Methods
     private func handleNotificationUpdates(

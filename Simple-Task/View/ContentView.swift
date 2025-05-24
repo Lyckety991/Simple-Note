@@ -43,6 +43,43 @@ enum TaskCategory: String, CaseIterable, Identifiable {
 }
 
 
+enum SortOption: String, CaseIterable, Identifiable {
+    var id: String { rawValue }
+
+    case creationDateAsc
+    case creationDateDesc
+    case dueDateAsc
+    case dueDateDesc
+    case withReminder
+
+    var label: String {
+        switch self {
+        case .creationDateAsc:
+            return NSLocalizedString("sort_created_asc", comment: "Sort by creation date ascending")
+        case .creationDateDesc:
+            return NSLocalizedString("sort_created_desc", comment: "Sort by creation date descending")
+        case .dueDateAsc:
+            return NSLocalizedString("sort_due_asc", comment: "Sort by due date ascending")
+        case .dueDateDesc:
+            return NSLocalizedString("sort_due_desc", comment: "Sort by due date descending")
+        case .withReminder:
+            return NSLocalizedString("sort_with_reminder", comment: "Sort by tasks with reminders")
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .creationDateAsc: return "calendar.badge.plus"
+        case .creationDateDesc: return "calendar.badge.minus"
+        case .dueDateAsc: return "calendar"
+        case .dueDateDesc: return "calendar.circle.fill"
+        case .withReminder: return "bell"
+        }
+    }
+}
+
+
+
 struct ContentView: View {
     @EnvironmentObject var taskViewModel: TaskViewModel
     @AppStorage("isDarkMode") private var isDarkMode = false
@@ -50,6 +87,8 @@ struct ContentView: View {
     @State private var showingAddSheet = false
     @State private var selectedTask: PrivateTask?
     @State private var showingSettingsView = false
+    @State private var sortOption: SortOption? = nil
+
 
     var body: some View {
         NavigationStack {
@@ -97,6 +136,7 @@ struct ContentView: View {
         List {
             ForEach(filteredTasks) { task in
                 TaskCard(task: task) { taskToDelete in
+                        
                     Task {
                         await MainActor.run {
                             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
@@ -117,6 +157,9 @@ struct ContentView: View {
             if filteredTasks.isEmpty {
                 emptyState
             }
+        }
+        .refreshable {
+             taskViewModel.fetchTasks()
         }
         .scrollTargetBehavior(.viewAligned)
         .listStyle(.plain)
@@ -164,17 +207,61 @@ struct ContentView: View {
                 Image(systemName: isDarkMode ? "moon.fill" : "sun.max.fill")
                     .foregroundStyle(isDarkMode ? .white : .black)
             }
+            Menu {
+                Picker(NSLocalizedString("sort_menu_title", comment: "Title for sort menu"), selection: $sortOption) {
+                    Text(NSLocalizedString("sort_none", comment: "No sorting")).tag(SortOption?.none)
+                    ForEach(SortOption.allCases) { option in
+                        Label(option.label, systemImage: option.systemImage)
+                            .tag(Optional(option))
+                    }
+                }
+            } label: {
+                Image(systemName: "line.3.horizontal.decrease.circle")
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(isDarkMode ? .white : .black)
+            }
+
         }
     }
 
     private var filteredTasks: [PrivateTask] {
-        guard let selectedCategory = selectedCategory else { return taskViewModel.tasks }
-        return taskViewModel.tasks.filter { $0.category == selectedCategory.rawValue }
+        var tasks = taskViewModel.tasks
+
+        // Optional: Kategorie filtern
+        if let selectedCategory = selectedCategory {
+            tasks = tasks.filter { $0.category == selectedCategory.rawValue }
+        }
+
+        // Sortierung
+        if let option = sortOption {
+            switch option {
+            case .creationDateAsc:
+                tasks.sort { ($0.creationDate ?? .distantPast) < ($1.creationDate ?? .distantPast) }
+            case .creationDateDesc:
+                tasks.sort { ($0.creationDate ?? .distantPast) > ($1.creationDate ?? .distantPast) }
+            case .dueDateAsc:
+                tasks.sort { ($0.date ?? .distantFuture) < ($1.date ?? .distantFuture) }
+            case .dueDateDesc:
+                tasks.sort { ($0.date ?? .distantFuture) > ($1.date ?? .distantFuture) }
+            case .withReminder:
+                tasks = tasks.filter {
+                    $0.calendarEventID != nil &&
+                    $0.date?.addingTimeInterval($0.reminderOffset) ?? .distantPast > Date()
+                }
+
+            }
+        } else {
+            //Neuste werden bis oben angezeigt
+            tasks.sort { ($0.creationDate ?? .distantPast) > ($1.creationDate ?? .distantPast) }
+        }
+
+        return tasks
     }
+
 
     private var backgroundGradient: some View {
         LinearGradient(
-            gradient: Gradient(colors: isDarkMode ? [.black, .gray.opacity(0.5)] : [.white.opacity(0.30), .gray.opacity(0.10)]),
+            gradient: Gradient(colors: isDarkMode ? [.black, .gray.opacity(0.11)] : [.white.opacity(0.60), .gray.opacity(0.10)]),
             startPoint: .top,
             endPoint: .bottom
         )

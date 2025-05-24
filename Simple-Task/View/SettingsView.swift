@@ -57,6 +57,8 @@ struct SettingsView: View {
             .onChange(of: isDarkMode) { _, newValue in
                 updateWindowTheme(isDarkMode: newValue)
             }
+            .foregroundStyle(isDarkMode ? .white : .black)
+            .tint(isDarkMode ? .white.opacity(0.50) : .black)
     }
     
     private var mailButton: some View {

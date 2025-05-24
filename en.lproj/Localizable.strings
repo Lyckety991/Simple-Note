@@ -8,12 +8,12 @@
 
 //AddTaskSheet
 "noteTitleSection" = "Your Note";
-"taskPlaceholder" = "Your task...";
+"taskPlaceholder" = "Note title...";
 "descriptionSection" = "Description";
 "dueAndReminderSection" = "Due & Reminder";
 "dateLabel" = "Date";
 "reminderLabel" = "Reminder";
-"noReminder" = "No reminder";
+"noReminder" = "Select";
 "atDue" = "At due date";
 "5minBefore" = "5 minutes before";
 "30minBefore" = "30 minutes before";
@@ -25,16 +25,17 @@
 "saveButton" = "Save";
 "cancel" = "Cancel";
 "newNoteTitle" = "New Note";
+"enableDueDateToggle" = "Enable due date";
+
 
 // DetailView "titleSection" = "Title";
 "titlePlaceholder" = "Enter note title";
-
 "descriptionSection" = "Description";
 
 "dueAndReminderSection" = "Due & Reminder";
 "dateLabel" = "Due date";
 "reminderLabel" = "Reminder";
-"noReminder" = "No reminder";
+"cancel" = "Cancel";
 "atDue" = "At due time";
 "5minBefore" = "5 minutes before";
 "30minBefore" = "30 minutes before";
@@ -43,12 +44,19 @@
 "reminderPreview" = "Reminder at: %@";
 "reminderActive" = "Reminder is active";
 
+"reminderExpired" = "Reminder expired";
+
 "categorySection" = "Category";
 "categoryPickerLabel" = "Select category";
 
 "editNoteTitle" = "Edit Note";
 "cancelButton" = "Cancel";
 "saveButton" = "Save";
+
+"editReminderToggle" = "Edit reminder";
+"reminderTimeLabel" = "Reminder on: %@ o'clock";
+
+
 
 
 //Settings
@@ -81,3 +89,28 @@ categoryOther = "Other";
 "yourNotesTitle" = "Your Notes";
 "noNotesFound" = "No notes found!";
 "addNewNoteHint" = "Add new notes using the %@ button.";
+
+"sort_created_asc" = "Created ↑";
+"sort_created_desc" = "Created ↓";
+"sort_due_asc" = "Due ↑";
+"sort_due_desc" = "Due ↓";
+"sort_with_reminder" = "With Reminder";
+
+"sort_menu_title" = "Sort by";
+"sort_none" = "No sorting";
+
+
+
+//TaskCard
+"reminderExpiredLabel" = "Expired";
+"reminderActiveLabel" = "Reminder at:";
+"createdOnLabel" = "Created on %@";
+
+//Alert
+"invalidReminderTitle" = "Invalid Reminder";
+"invalidReminderMessage" = "The reminder is in the past. Please choose a later time.";
+"ok" = "OK";
+"emptyTitleAlertTitle" = "Missing Title";
+"emptyTitleAlertMessage" = "Please enter a title for your note.";
+
+

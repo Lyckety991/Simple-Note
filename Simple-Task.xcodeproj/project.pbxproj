@@ -9,19 +9,9 @@
 /* Begin PBXBuildFile section */
 		E822F0572DA127AE0050F129 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E822F0552DA127AE0050F129 /* Localizable.strings */; };
 		E822F0582DA127AE0050F129 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E822F0552DA127AE0050F129 /* Localizable.strings */; };
-		E869347D2D96C3B20041F6C2 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E869347C2D96C3B20041F6C2 /* WidgetKit.framework */; };
-		E869347F2D96C3B20041F6C2 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E869347E2D96C3B20041F6C2 /* SwiftUI.framework */; };
-		E869348E2D96C3B30041F6C2 /* SimpleTaskWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E869347A2D96C3B20041F6C2 /* SimpleTaskWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		E869348C2D96C3B30041F6C2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = E83953E42D3B8FF80097EFA6 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = E86934792D96C3B20041F6C2;
-			remoteInfo = SimpleTaskWidgetExtension;
-		};
 		E86934E12D9701640041F6C2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E83953E42D3B8FF80097EFA6 /* Project object */;
@@ -45,7 +35,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				E869348E2D96C3B30041F6C2 /* SimpleTaskWidgetExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -56,10 +45,7 @@
 		E822F0562DA127AE0050F129 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E822F0592DA1286F0050F129 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E83953EC2D3B8FF80097EFA6 /* Simple-Task.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Simple-Task.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E869347A2D96C3B20041F6C2 /* SimpleTaskWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SimpleTaskWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		E869347C2D96C3B20041F6C2 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		E869347E2D96C3B20041F6C2 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		E86934952D96C7BF0041F6C2 /* SimpleTaskWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SimpleTaskWidgetExtension.entitlements; sourceTree = "<group>"; };
 		E86934DD2D9701640041F6C2 /* TaskViewModelTests.swift.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TaskViewModelTests.swift.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E86934ED2D9823DA0041F6C2 /* NotificationManagerTests.swift.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NotificationManagerTests.swift.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -69,27 +55,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
-			);
-			target = E83953EB2D3B8FF80097EFA6 /* Simple-Task */;
-		};
-		E869348F2D96C3B30041F6C2 /* Exceptions for "SimpleTaskWidget" folder in "SimpleTaskWidgetExtension" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = E86934792D96C3B20041F6C2 /* SimpleTaskWidgetExtension */;
-		};
-		E869349B2D96C9DF0041F6C2 /* Exceptions for "Simple-Task" folder in "SimpleTaskWidgetExtension" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Helper/TaskEntry.swift,
-			);
-			target = E86934792D96C3B20041F6C2 /* SimpleTaskWidgetExtension */;
-		};
-		E86934A02D96CB230041F6C2 /* Exceptions for "SimpleTaskWidget" folder in "Simple-Task" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				TaskStorageReader.swift,
 			);
 			target = E83953EB2D3B8FF80097EFA6 /* Simple-Task */;
 		};
@@ -114,18 +79,8 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				E822F0512DA126E20050F129 /* Exceptions for "Simple-Task" folder in "Simple-Task" target */,
-				E869349B2D96C9DF0041F6C2 /* Exceptions for "Simple-Task" folder in "SimpleTaskWidgetExtension" target */,
 			);
 			path = "Simple-Task";
-			sourceTree = "<group>";
-		};
-		E86934802D96C3B20041F6C2 /* SimpleTaskWidget */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				E86934A02D96CB230041F6C2 /* Exceptions for "SimpleTaskWidget" folder in "Simple-Task" target */,
-				E869348F2D96C3B30041F6C2 /* Exceptions for "SimpleTaskWidget" folder in "SimpleTaskWidgetExtension" target */,
-			);
-			path = SimpleTaskWidget;
 			sourceTree = "<group>";
 		};
 		E86934DE2D9701640041F6C2 /* TaskViewModelTests.swift */ = {
@@ -152,15 +107,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E86934772D96C3B20041F6C2 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				E869347F2D96C3B20041F6C2 /* SwiftUI.framework in Frameworks */,
-				E869347D2D96C3B20041F6C2 /* WidgetKit.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		E86934DA2D9701640041F6C2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -182,9 +128,7 @@
 			isa = PBXGroup;
 			children = (
 				E822F0552DA127AE0050F129 /* Localizable.strings */,
-				E86934952D96C7BF0041F6C2 /* SimpleTaskWidgetExtension.entitlements */,
 				E83953EE2D3B8FF80097EFA6 /* Simple-Task */,
-				E86934802D96C3B20041F6C2 /* SimpleTaskWidget */,
 				E86934DE2D9701640041F6C2 /* TaskViewModelTests.swift */,
 				E86934EE2D9823DA0041F6C2 /* NotificationManagerTests.swift */,
 				E869347B2D96C3B20041F6C2 /* Frameworks */,
@@ -196,7 +140,6 @@
 			isa = PBXGroup;
 			children = (
 				E83953EC2D3B8FF80097EFA6 /* Simple-Task.app */,
-				E869347A2D96C3B20041F6C2 /* SimpleTaskWidgetExtension.appex */,
 				E86934DD2D9701640041F6C2 /* TaskViewModelTests.swift.xctest */,
 				E86934ED2D9823DA0041F6C2 /* NotificationManagerTests.swift.xctest */,
 			);
@@ -206,7 +149,6 @@
 		E869347B2D96C3B20041F6C2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E869347C2D96C3B20041F6C2 /* WidgetKit.framework */,
 				E869347E2D96C3B20041F6C2 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
@@ -227,7 +169,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				E869348D2D96C3B30041F6C2 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				E83953EE2D3B8FF80097EFA6 /* Simple-Task */,
@@ -238,28 +179,6 @@
 			productName = "Simple-Task";
 			productReference = E83953EC2D3B8FF80097EFA6 /* Simple-Task.app */;
 			productType = "com.apple.product-type.application";
-		};
-		E86934792D96C3B20041F6C2 /* SimpleTaskWidgetExtension */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = E86934902D96C3B30041F6C2 /* Build configuration list for PBXNativeTarget "SimpleTaskWidgetExtension" */;
-			buildPhases = (
-				E86934762D96C3B20041F6C2 /* Sources */,
-				E86934772D96C3B20041F6C2 /* Frameworks */,
-				E86934782D96C3B20041F6C2 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				E86934802D96C3B20041F6C2 /* SimpleTaskWidget */,
-			);
-			name = SimpleTaskWidgetExtension;
-			packageProductDependencies = (
-			);
-			productName = SimpleTaskWidgetExtension;
-			productReference = E869347A2D96C3B20041F6C2 /* SimpleTaskWidgetExtension.appex */;
-			productType = "com.apple.product-type.app-extension";
 		};
 		E86934DC2D9701640041F6C2 /* TaskViewModelTests.swift */ = {
 			isa = PBXNativeTarget;
@@ -320,9 +239,6 @@
 					E83953EB2D3B8FF80097EFA6 = {
 						CreatedOnToolsVersion = 16.0;
 					};
-					E86934792D96C3B20041F6C2 = {
-						CreatedOnToolsVersion = 16.2;
-					};
 					E86934DC2D9701640041F6C2 = {
 						CreatedOnToolsVersion = 16.2;
 						TestTargetID = E83953EB2D3B8FF80097EFA6;
@@ -349,7 +265,6 @@
 			projectRoot = "";
 			targets = (
 				E83953EB2D3B8FF80097EFA6 /* Simple-Task */,
-				E86934792D96C3B20041F6C2 /* SimpleTaskWidgetExtension */,
 				E86934DC2D9701640041F6C2 /* TaskViewModelTests.swift */,
 				E86934EC2D9823DA0041F6C2 /* NotificationManagerTests.swift */,
 			);
@@ -362,13 +277,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E822F0582DA127AE0050F129 /* Localizable.strings in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		E86934782D96C3B20041F6C2 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -397,13 +305,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E86934762D96C3B20041F6C2 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		E86934D92D9701640041F6C2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -421,11 +322,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		E869348D2D96C3B30041F6C2 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = E86934792D96C3B20041F6C2 /* SimpleTaskWidgetExtension */;
-			targetProxy = E869348C2D96C3B30041F6C2 /* PBXContainerItemProxy */;
-		};
 		E86934E22D9701640041F6C2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = E83953EB2D3B8FF80097EFA6 /* Simple-Task */;
@@ -579,13 +475,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Simple-Task/Simple-Task.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_ASSET_PATHS = "\"Simple-Task/Preview Content\"";
 				DEVELOPMENT_TEAM = 48PCKXTHH4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Simple-Task/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Simple-Task";
+				INFOPLIST_KEY_CFBundleDisplayName = "Simple-Note";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "Diese App benötigt Zugriff auf Ihren Kalender, um Aufgaben hinzuzufügen.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -597,7 +493,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "patricklanham.Simple-Task-App";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -617,13 +513,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Simple-Task/Simple-Task.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_ASSET_PATHS = "\"Simple-Task/Preview Content\"";
 				DEVELOPMENT_TEAM = 48PCKXTHH4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Simple-Task/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Simple-Task";
+				INFOPLIST_KEY_CFBundleDisplayName = "Simple-Note";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSCalendarsUsageDescription = "Diese App benötigt Zugriff auf Ihren Kalender, um Aufgaben hinzuzufügen.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -635,75 +531,9 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "patricklanham.Simple-Task-App";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Release;
-		};
-		E86934912D96C3B30041F6C2 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = SimpleTaskWidgetExtension.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 48PCKXTHH4;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = SimpleTaskWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = SimpleTaskWidget;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "patricklanham.Simple-Task-App.SimpleTaskWidget";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Debug;
-		};
-		E86934922D96C3B30041F6C2 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = SimpleTaskWidgetExtension.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 48PCKXTHH4;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = SimpleTaskWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = SimpleTaskWidget;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "patricklanham.Simple-Task-App.SimpleTaskWidget";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -823,15 +653,6 @@
 			buildConfigurations = (
 				E83953FB2D3B8FF90097EFA6 /* Debug */,
 				E83953FC2D3B8FF90097EFA6 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		E86934902D96C3B30041F6C2 /* Build configuration list for PBXNativeTarget "SimpleTaskWidgetExtension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E86934912D96C3B30041F6C2 /* Debug */,
-				E86934922D96C3B30041F6C2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

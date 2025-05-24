@@ -12,7 +12,7 @@
 "dueAndReminderSection" = "Erinnerung";
 "dateLabel" = "Datum";
 "reminderLabel" = "Wann erinnern?";
-"noReminder" = "Keine Erinnerung";
+"noReminder" = "Auswahl";
 "atDue" = "Zur Fälligkeit";
 "5minBefore" = "5 Minuten vorher";
 "30minBefore" = "30 Minuten vorher";
@@ -24,6 +24,8 @@
 "saveButton" = "Speichern";
 "cancel" = "Abbrechen";
 "newNoteTitle" = "Neue Notiz";
+"enableDueDateToggle" = "Erinnerung aktivieren";
+
 
 // DetailsView
 "titleSection" = "Titel";
@@ -34,7 +36,7 @@
 "dueAndReminderSection" = "Datum & Erinnerung";
 "dateLabel" = "Datum";
 "reminderLabel" = "Wann erinnern?";
-"noReminder" = "Keine Erinnerung";
+"cancelNote" = "Löschen";
 "atDue" = "Zur Fälligkeit";
 "5minBefore" = "5 Minuten vorher";
 "30minBefore" = "30 Minuten vorher";
@@ -50,11 +52,19 @@
 "cancelButton" = "Abbrechen";
 "saveButton" = "Speichern";
 
+"reminderActive" = "Erinnerung aktiv";
+"reminderExpired" = "Erinnerung abgelaufen";
+
+"editReminderToggle" = "Erinnerung bearbeiten";
+"reminderTimeLabel" = "Erinnerung am: %@ Uhr";
+
+
+
 //Settings
 "settingsTitle" = "Einstellungen";
 
 "appearanceSection" = "Darstellung";
-"darkModeToggle" = "Dark Mode";
+"darkModeToggle" = "Dunkles Design";
 
 "supportSection" = "Support";
 "supportEmailButton" = "Support Email";
@@ -80,4 +90,30 @@ categoryOther = "Sonstiges";
 "yourNotesTitle" = "Deine Notizen";
 "noNotesFound" = "Keine Notizen gefunden!";
 "addNewNoteHint" = "Füge neue Notizen über das %@-Symbol hinzu.";
+"createAt" = "Erstellt am:";
+
+"sort_created_asc" = "Erstellt ↑";
+"sort_created_desc" = "Erstellt ↓";
+"sort_due_asc" = "Fällig ↑";
+"sort_due_desc" = "Fällig ↓";
+"sort_with_reminder" = "Mit Erinnerung";
+"sort_menu_title" = "Sortieren nach";
+"sort_none" = "Keine Sortierung";
+
+
+
+
+//TaskCard
+"reminderExpiredLabel" = "Abgelaufen";
+"reminderActiveLabel" = "Erinnerung am:";
+"createdOnLabel" = "Erstellt am %@";
+
+//AlertView -> AddTaskView
+"invalidReminderTitle" = "Ungültige Erinnerung";
+"invalidReminderMessage" = "Die Erinnerung liegt in der Vergangenheit. Bitte wähle einen späteren Zeitpunkt.";
+"ok" = "OK";
+"emptyTitleAlertTitle" = "Titel fehlt";
+"emptyTitleAlertMessage" = "Bitte gib einen Titel für deine Notiz ein.";
+
+
 
