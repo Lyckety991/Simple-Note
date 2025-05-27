@@ -18,6 +18,8 @@ class TaskViewModel: ObservableObject {
     @Published var isDataLoaded = false
     @Published var errorMessage: String?
     @Published var notificationsEnabled: Bool = false
+    
+    @Published var refreshTrigger = UUID()
 
     
     init(manager: TaskDataModel) {
@@ -39,6 +41,7 @@ class TaskViewModel: ObservableObject {
         DispatchQueue.global(qos: .background).async {
             self.manager.loadCoreData { [weak self] result in
                 DispatchQueue.main.async {
+                    self?.refreshTrigger = UUID()
                     self?.isDataLoaded = result
                     self?.fetchTasks()
                 }
@@ -52,7 +55,8 @@ class TaskViewModel: ObservableObject {
         date: Date,
         creationDate: Date = Date(),
         category: TaskCategory,
-        reminderOffset: TimeInterval
+        reminderOffset: TimeInterval,
+        todos: [String] = []
         
     ) async throws -> PrivateTask { // 👈 throws hinzufügen
         let newTask = PrivateTask(context: manager.persistentContainer.viewContext)
@@ -63,6 +67,15 @@ class TaskViewModel: ObservableObject {
         newTask.creationDate = creationDate
         newTask.category = category.rawValue
         newTask.reminderOffset = reminderOffset
+        
+        for todoTitle in todos {
+               let todo = ToDoItem(context: manager.persistentContainer.viewContext)
+               todo.id = UUID()
+               todo.title = todoTitle
+               todo.isDone = false
+               todo.createdAt = Date()
+               todo.task = newTask
+           }
         
         let notificationsAllowed = await checkNotificationsEnabled()
         
@@ -153,6 +166,7 @@ class TaskViewModel: ObservableObject {
             task.date = date
             task.category = category.rawValue
             task.reminderOffset = reminderOffset
+            
         }
 
         // Berechnungen zum Vergleich

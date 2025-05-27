@@ -27,6 +27,10 @@ struct AddTaskSheet: View {
     @State private var isDueDateEnabled: Bool = false
     @State var showInvalidReminderAlert: Bool = false
     @State private var showEmptyTitleAlert = false
+    
+    //Für die ToDoListe
+    @State private var newTodoText: String = ""
+    @State private var todos: [String] = []
 
 
     
@@ -63,6 +67,42 @@ struct AddTaskSheet: View {
                                 }
                             }
                         }
+                }
+                
+                Section(header: Text("Aufgabenliste")) {
+                    VStack(spacing: 8) {
+                        HStack {
+                            TextField("Neues ToDo...", text: $newTodoText)
+                                .textFieldStyle(.roundedBorder)
+                            Button(action: {
+                                let trimmed = newTodoText.trimmingCharacters(in: .whitespaces)
+                                guard !trimmed.isEmpty else { return }
+                                todos.append(trimmed)
+                                newTodoText = ""
+                            }) {
+                                Image(systemName: "plus.circle.fill")
+                                    .font(.title2)
+                                    .foregroundStyle(.blue)
+                                    .frame(width: 30, height: 30)
+                            }
+                            .buttonStyle(.plain)
+                        }
+
+                        ForEach(Array(todos.enumerated()), id: \.offset) { index, item in
+                            HStack {
+                                Image(systemName: "circle")
+                                Text(item)
+                                Spacer()
+                                Button(action: {
+                                    todos.remove(at: index)
+                                }) {
+                                    Image(systemName: "trash")
+                                        .foregroundStyle(.red)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
                 }
 
                 
@@ -168,7 +208,8 @@ struct AddTaskSheet: View {
                                                 desc: desc,
                                                 date: deadline,
                                                 category: selectedCategory,
-                                                reminderOffset: reminderOffset
+                                                reminderOffset: reminderOffset,
+                                                todos: todos
                                                 
                                             )
                                             

@@ -88,6 +88,8 @@ struct ContentView: View {
     @State private var selectedTask: PrivateTask?
     @State private var showingSettingsView = false
     @State private var sortOption: SortOption? = nil
+    @State private var updateTrigger = UUID()
+
 
 
     var body: some View {
@@ -115,6 +117,10 @@ struct ContentView: View {
             }
             .sheet(item: $selectedTask) { task in
                 DetailView(task: task).environmentObject(taskViewModel)
+                    .onDisappear {
+                        taskViewModel.fetchTasks()
+                        updateTrigger = UUID()
+                           }
             }
         }
     }
@@ -158,6 +164,7 @@ struct ContentView: View {
                 emptyState
             }
         }
+        .id(updateTrigger)
         .refreshable {
              taskViewModel.fetchTasks()
         }
@@ -308,3 +315,5 @@ extension Collection {
     return ContentView()
         .environmentObject(viewModel)
 }
+
+

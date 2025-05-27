@@ -31,6 +31,31 @@ struct TaskCard: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
+                
+                // 📌 Nur anzeigen, nicht interaktiv
+                if !task.todosArray.isEmpty {
+                    VStack(alignment: .leading, spacing: 4) {
+                        ForEach(task.todosArray.prefix(3)) { todo in
+                            HStack(spacing: 8) {
+                                Image(systemName: todo.isDone ? "checkmark.circle.fill" : "circle")
+                                    .foregroundColor(todo.isDone ? .green : .gray)
+                                Text(todo.title ?? "")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                    .strikethrough(todo.isDone)
+                            }
+                        }
+                        if task.todosArray.count > 3 {
+                            Text("…weitere \(task.todosArray.count - 3) ToDo(s)")
+                                .font(.caption2)
+                                .foregroundColor(.gray)
+                        }
+                    }
+                }
+
+                
+                
+                
 
                 if shouldShowReminderLabel {
                     let reminderTime = task.reminderOffset == 0.1 ? (task.date ?? Date()) : (task.date ?? Date()).addingTimeInterval(task.reminderOffset)

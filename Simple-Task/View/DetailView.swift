@@ -27,6 +27,9 @@ struct DetailView: View {
     //Neu
     @State private var showEmptyTitleAlert = false
     @State private var showInvalidReminderAlert = false
+    
+    @State private var newTodoText: String = ""
+    @State private var refreshTrigger = UUID()
 
 
     init(task: PrivateTask) {
@@ -64,6 +67,74 @@ struct DetailView: View {
                             }
                         }
                 }
+                
+                
+                // MARK: - Todo Bereich
+                // Zusätzliche Todo´s hinzufügen
+                Section("Neues ToDo hinzufügen") {
+                    HStack {
+                        TextField("Neues ToDo...", text: $newTodoText)
+                            .textFieldStyle(.roundedBorder)
+                        Button {
+                            Task {
+                                await addTodo()
+                            }
+                            
+                        } label: {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.blue)
+                        }
+                        .disabled(newTodoText.trimmingCharacters(in: .whitespaces).isEmpty)
+                    }
+                }
+
+                
+                
+                //Bestehende ToDos abarbeiten
+                Section(header: Text("Aufgabenliste")) {
+                    if task.todosArray.isEmpty {
+                        Text("Keine ToDos vorhanden.")
+                            .foregroundColor(.secondary)
+                    } else {
+                        ForEach(task.todosArray) { todo in
+                            HStack {
+                                Button(action: {
+                                    todo.isDone.toggle()
+                                    refreshTrigger = UUID()
+                                    Task {
+                                        await viewModel.saveContext()
+                                    }
+                                }) {
+                                    Image(systemName: todo.isDone ? "checkmark.circle.fill" : "circle")
+                                        .foregroundColor(todo.isDone ? .green : .gray)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+
+                                Text(todo.title ?? "")
+                                    .strikethrough(todo.isDone)
+                                    .foregroundColor(.primary)
+
+                                Spacer()
+
+                                Button(role: .destructive) {
+                                    task.managedObjectContext?.delete(todo)
+                                    refreshTrigger = UUID()
+                                    Task {
+                                        await viewModel.saveContext()
+                                    }
+                                    
+                                } label: {
+                                    Image(systemName: "trash")
+                                        .foregroundColor(.red)
+                                }
+                                .buttonStyle(BorderlessButtonStyle())
+                            }
+                        }
+                        .id(refreshTrigger)
+                    }
+                }
+
 
                 Section(header: Text(NSLocalizedString("dueAndReminderSection", comment: "Section for date and reminder"))) {
                     
@@ -209,6 +280,26 @@ struct DetailView: View {
             )
         }
     }
+    
+    private func addTodo() async {
+        guard let context = task.managedObjectContext else { return }
+
+        await MainActor.run {
+            let todo = ToDoItem(context: context)
+            todo.id = UUID()
+            todo.title = newTodoText
+            todo.isDone = false
+            todo.createdAt = Date()
+            todo.task = task
+
+            newTodoText = ""
+            refreshTrigger = UUID() // 🟢 erzwingt Neuzeichnung
+        }
+
+        await viewModel.saveContext()
+    }
+
+
 
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
