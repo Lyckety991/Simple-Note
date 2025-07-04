@@ -7,7 +7,6 @@ struct TaskCard: View {
     @State private var now = Date()
     @AppStorage("isDarkMode") private var isDarkMode = false
 
-    // Timer zur Aktualisierung alle 20 Sekunden
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
@@ -17,104 +16,108 @@ struct TaskCard: View {
                 .frame(width: 6)
                 .cornerRadius(3, corners: [.topRight, .bottomRight])
 
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text(task.title ?? "")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.primary)
-                    Spacer()
-                }
+            VStack(alignment: .leading, spacing: 6) {
+                // Titel
+                Text(task.title ?? "")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.bottom, 2)
 
+                // Beschreibung
                 if let desc = task.desc, !desc.isEmpty {
                     Text(desc)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
+                        .padding(.bottom, 4)
                 }
                 
-                // 📌 Nur anzeigen, nicht interaktiv
+                // ToDo-Liste
                 if !task.todosArray.isEmpty {
-                    VStack(alignment: .leading, spacing: 4) {
-                        ForEach(task.todosArray.prefix(3)) { todo in
-                            HStack(spacing: 8) {
+                    VStack(alignment: .leading, spacing: 3) {
+                        ForEach(task.todosArray.prefix(5)) { todo in
+                            HStack(alignment: .firstTextBaseline, spacing: 6) {
                                 Image(systemName: todo.isDone ? "checkmark.circle.fill" : "circle")
+                                    .font(.system(size: 14)) // Dezentere Größe
                                     .foregroundColor(todo.isDone ? .green : .gray)
                                 Text(todo.title ?? "")
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
                                     .strikethrough(todo.isDone)
+                                    .opacity(todo.isDone ? 0.6 : 1.0)
                             }
                         }
-                        if task.todosArray.count > 3 {
-                            Text("…weitere \(task.todosArray.count - 3) ToDo(s)")
+                        if task.todosArray.count > 5 {
+                            Text("…weitere \(task.todosArray.count - 5) Aufgabe(n)")
                                 .font(.caption2)
                                 .foregroundColor(.gray)
+                                .padding(.top, 2)
                         }
                     }
+                    .padding(.vertical, 4)
                 }
-
                 
-                
-                
-
+                // Erinnerungs-Info
                 if shouldShowReminderLabel {
-                    let reminderTime = task.reminderOffset == 0.1 ? (task.date ?? Date()) : (task.date ?? Date()).addingTimeInterval(task.reminderOffset)
+                    let reminderTime = task.reminderOffset == 0.1
+                        ? (task.date ?? Date())
+                        : (task.date ?? Date()).addingTimeInterval(task.reminderOffset)
+                    
                     let isReminderExpired = reminderTime <= now
-
-                    HStack {
-                        if isReminderExpired {
-                            Label(NSLocalizedString("reminderExpiredLabel", comment: "Label when reminder is expired"), systemImage: "clock.badge.exclamationmark")
-                                .foregroundColor(.red)
-                                .bold()
-                        } else {
-                            Label {
-                                Text(NSLocalizedString("reminderActiveLabel", comment: "")) +
-                                Text(" \(formatDate(reminderTime))")
-                            } icon: {
-                                Image(systemName: "clock.badge")
-                            }
-                            .foregroundColor(.orange)
-                            .bold()
-
-
-                        }
+                    
+                    HStack(spacing: 4) {
+                        Image(systemName: isReminderExpired ? "clock.badge.exclamationmark" : "clock.badge")
+                        Text(isReminderExpired
+                             ? NSLocalizedString("reminderExpiredLabel", comment: "")
+                             : "\(formatDate(reminderTime))")
                     }
                     .font(.caption)
+                    .foregroundColor(isReminderExpired ? .red : .orange)
+                    .bold()
+                    .padding(.top, 2)
                 }
 
+                // Fußzeile
                 HStack {
                     if let createdDate = task.creationDate {
-                        Label(
-                            String(format: NSLocalizedString("createdOnLabel", comment: "Label showing creation date of the task"),
-                                   formatCreationDate(createdDate)),
-                            systemImage: "calendar.badge.plus"
-                        )
+                        HStack(spacing: 4) {
+                            Image(systemName: "calendar.badge.plus")
+                            Text(formatCreationDate(createdDate))
+                        }
                         .font(.caption2)
-                        .bold()
+                        .foregroundColor(.secondary)
                     }
-
+                    
                     Spacer()
-                    Label(task.taskCategory.displayName, systemImage: task.taskCategory.symbol)
-                        .categoryBadge(color: task.taskCategory.color)
-                        
-                        .bold()
-                        
+                    
+                    HStack(spacing: 6) {
+                        Image(systemName: task.taskCategory.symbol)
+                            .foregroundColor(task.taskCategory.color)
+                        Text(task.taskCategory.displayName)
+                    }
+                    .font(.caption)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(task.taskCategory.color.opacity(0.15))
+                    .clipShape(Capsule())
                 }
-                .foregroundColor(.secondary)
+                .padding(.top, 4)
             }
-            .padding()
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
         }
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .fill(isDarkMode ? Color(.systemGray5) : .white)
-                .shadow(color: .black.opacity(0.1), radius: 3, x: 0, y: 2)
+                .shadow(color: .black.opacity(0.07), radius: 3, x: 0, y: 1)
         )
         .onReceive(timer) { now = $0 }
     }
 
     private var shouldShowReminderLabel: Bool {
         guard let date = task.date else { return false }
-        return task.reminderOffset != 0.0 && task.reminderOffset != -1.0 && date > Date.distantPast
+        return task.reminderOffset != 0.0 && date > Date.distantPast
     }
 
     private func formatCreationDate(_ date: Date) -> String {
@@ -126,26 +129,10 @@ struct TaskCard: View {
 
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateStyle = .short
-        formatter.timeStyle = .short
-        formatter.timeZone = .current
-        formatter.locale = .current
+        formatter.dateFormat = "dd.MM.yy HH:mm"
         return formatter.string(from: date)
     }
 }
-
-extension View {
-    func categoryBadge(color: Color) -> some View {
-        self
-            .font(.caption)
-            .foregroundColor(color)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 5)
-            .background(color.opacity(0.15))
-            .clipShape(Capsule())
-    }
-}
-
 #Preview("Aktive Erinnerung") {
     let context = TaskDataModel.preview.persistentContainer.viewContext
     let task = PrivateTask(context: context)

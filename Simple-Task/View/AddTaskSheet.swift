@@ -47,9 +47,6 @@ struct AddTaskSheet: View {
                                 isTextFieldFocused = true
                             }
                         }
-                       
-
-                       
                 }
                 // Eingabe für Beschreibung
                 Section(NSLocalizedString("descriptionSection", comment: "Section title for task description")) {
@@ -72,8 +69,8 @@ struct AddTaskSheet: View {
                 Section(header: Text("Aufgabenliste")) {
                     VStack(spacing: 8) {
                         HStack {
-                            TextField("Neues ToDo...", text: $newTodoText)
-                                .textFieldStyle(.roundedBorder)
+                            TextField("Neues Aufgabe...", text: $newTodoText)
+                                
                             Button(action: {
                                 let trimmed = newTodoText.trimmingCharacters(in: .whitespaces)
                                 guard !trimmed.isEmpty else { return }
@@ -82,10 +79,10 @@ struct AddTaskSheet: View {
                             }) {
                                 Image(systemName: "plus.circle.fill")
                                     .font(.title2)
-                                    .foregroundStyle(.blue)
+                                    .foregroundStyle(isDarkMode ? .white : .black)
                                     .frame(width: 30, height: 30)
                             }
-                            .buttonStyle(.plain)
+
                         }
 
                         ForEach(Array(todos.enumerated()), id: \.offset) { index, item in

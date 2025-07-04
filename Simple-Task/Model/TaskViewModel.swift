@@ -23,6 +23,8 @@ class TaskViewModel: ObservableObject {
 
     
     init(manager: TaskDataModel) {
+       
+
         self.manager = manager
         loadData()
     }
@@ -139,7 +141,6 @@ class TaskViewModel: ObservableObject {
         fetchTasks()
     }
     
-    
     // MARK: - Update Task with Async/Await
     /// Funktion zum updaten der Notizen
     /// Überprüfung ob sich der Offset geändert hat
@@ -158,6 +159,7 @@ class TaskViewModel: ObservableObject {
 
         // Neue Reminder-Zeit berechnen
         let reminderDate = reminderOffset == 0.1 ? date : date.addingTimeInterval(reminderOffset)
+       
 
         await MainActor.run {
             task.title = title
@@ -215,6 +217,21 @@ class TaskViewModel: ObservableObject {
         notificationsAllowed: Bool,
         title: String
     ) async throws { // 👈 throws hinzufügen
+        
+        // Neue zusätzliche Prüfung für die abgelaufene Benachrichtigung ***
+        if let taskDate = task.date, task.reminderOffset != 0 {
+                let reminderTime = taskDate.addingTimeInterval(task.reminderOffset)
+                if reminderTime < Date() {
+                    await removeExistingNotification(oldID: oldID)
+                    await MainActor.run {
+                        task.calendarEventID = nil
+                        task.reminderOffset = 0 // Zurücksetzen auf Default
+                    }
+                    return
+                }
+            }
+        
+        
         // Fall 1: Erinnerung deaktiviert
         if oldOffset != 0 && task.reminderOffset == 0 {
             await removeExistingNotification(oldID: oldID)

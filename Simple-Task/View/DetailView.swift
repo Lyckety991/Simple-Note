@@ -38,7 +38,22 @@ struct DetailView: View {
         _description = State(initialValue: task.desc ?? "")
         _date = State(initialValue: task.date ?? Date())
         _category = State(initialValue: task.taskCategory)
-        _reminderOffset = State(initialValue: task.reminderOffset)
+        
+        // Neue Logik: Prüfen, ob Benachrichtigung abgelaufen ist
+           let initialReminderOffset: TimeInterval
+           if let taskDate = task.date, task.reminderOffset != 0 {
+               let reminderTime = taskDate.addingTimeInterval(task.reminderOffset)
+               if reminderTime < Date() {
+                   initialReminderOffset = 0 // Zurücksetzen auf Default
+               } else {
+                   initialReminderOffset = task.reminderOffset
+               }
+           } else {
+               initialReminderOffset = task.reminderOffset
+           }
+        
+        //_reminderOffset = State(initialValue: task.reminderOffset) -> Alte Version ***
+        _reminderOffset = State(initialValue: initialReminderOffset)
     }
 
     var body: some View {
@@ -71,10 +86,10 @@ struct DetailView: View {
                 
                 // MARK: - Todo Bereich
                 // Zusätzliche Todo´s hinzufügen
-                Section("Neues ToDo hinzufügen") {
+                Section("Neues Aufgabe hinzufügen") {
                     HStack {
-                        TextField("Neues ToDo...", text: $newTodoText)
-                            .textFieldStyle(.roundedBorder)
+                        TextField("Neues Aufgabe...", text: $newTodoText)
+                           
                         Button {
                             Task {
                                 await addTodo()
@@ -83,7 +98,7 @@ struct DetailView: View {
                         } label: {
                             Image(systemName: "plus.circle.fill")
                                 .font(.title2)
-                                .foregroundColor(.blue)
+                                .foregroundStyle(isDarkMode ? .white : .black)
                         }
                         .disabled(newTodoText.trimmingCharacters(in: .whitespaces).isEmpty)
                     }
@@ -94,7 +109,7 @@ struct DetailView: View {
                 //Bestehende ToDos abarbeiten
                 Section(header: Text("Aufgabenliste")) {
                     if task.todosArray.isEmpty {
-                        Text("Keine ToDos vorhanden.")
+                        Text("Keine Aufgaben vorhanden.")
                             .foregroundColor(.secondary)
                     } else {
                         ForEach(task.todosArray) { todo in
@@ -108,19 +123,27 @@ struct DetailView: View {
                                 }) {
                                     Image(systemName: todo.isDone ? "checkmark.circle.fill" : "circle")
                                         .foregroundColor(todo.isDone ? .green : .gray)
+                                        .scaleEffect(todo.isDone ? 1.2 : 1.0)
+                                        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: todo.isDone)
                                 }
                                 .buttonStyle(PlainButtonStyle())
 
                                 Text(todo.title ?? "")
                                     .strikethrough(todo.isDone)
                                     .foregroundColor(.primary)
+                                    .opacity(todo.isDone ? 0.5 : 1.0)
+                                    .animation(.easeInOut(duration: 0.2), value: todo.isDone)
 
                                 Spacer()
 
                                 Button(role: .destructive) {
-                                    task.managedObjectContext?.delete(todo)
+                                    withAnimation(.easeInOut(duration: 0.25)) {
+                                           task.managedObjectContext?.delete(todo)
+                                       }
                                     refreshTrigger = UUID()
                                     Task {
+                                        try? await Task.sleep(nanoseconds: 300_000_000) 
+                                        refreshTrigger = UUID()
                                         await viewModel.saveContext()
                                     }
                                     
